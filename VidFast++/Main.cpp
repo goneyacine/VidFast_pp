@@ -28,14 +28,11 @@ int main()
 	std::string outputVideoPath;
 	std::cin >> outputVideoPath;
 
-	std::cout << "Enter the speed multiplyer :" << "\n";
-	int multiplyer;
-	std::cin >> multiplyer;
 
 
 	cv::VideoCapture vid(inputVideoPath);
    
-	VidFast::Video::SlowDown(&vid, multiplyer, outputVideoPath);
+	VidFast::Video::ToColor16(&vid, outputVideoPath);
 
 	return 0;
 
