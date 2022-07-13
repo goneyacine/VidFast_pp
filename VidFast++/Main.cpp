@@ -10,8 +10,6 @@
     - cut 
 	- remove
 	- merge
-	- speed up & slow down
-	- resize
 	- change the frame rate
 
 */
@@ -32,7 +30,7 @@ int main()
 
 	cv::VideoCapture vid(inputVideoPath);
    
-	VidFast::Video::ToColor16(&vid, outputVideoPath);
+	VidFast::Video::Resize(&vid,400,400, outputVideoPath);
 
 	return 0;
 
