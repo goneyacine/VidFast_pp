@@ -3,13 +3,6 @@
 
 #include "Video.h"
 /*
-  project notes :
-
-  - basic functions needed :
-
-    - cut 
-	- remove
-	- merge
 	- change the frame rate
 
 */
@@ -22,15 +15,20 @@ int main()
 	std::string inputVideoPath;
 	std::cin >> inputVideoPath;
 
-	std::cout << "Enter the output video path :" << "\n";
-	std::string outputVideoPath;
-	std::cin >> outputVideoPath;
+	std::cout << "Enter the output video path 1 :" << "\n";
+	std::string outputVideoPath1;
+	std::cin >> outputVideoPath1;
 
+
+
+	std::cout << "Enter the output video path 2:" << "\n";
+	std::string outputVideoPath2;
+	std::cin >> outputVideoPath2;
 
 
 	cv::VideoCapture vid(inputVideoPath);
    
-	VidFast::Video::Resize(&vid,400,400, outputVideoPath);
+	VidFast::Video::Split(&vid,76, outputVideoPath1,outputVideoPath2);
 
 	return 0;
 

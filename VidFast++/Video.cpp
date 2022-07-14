@@ -4,14 +4,13 @@
 
 using namespace VidFast;
 
- 
-Video::Video(cv::VideoCapture p_video) : m_videoCapture(p_video)
+void Video::SpeedUp(cv::VideoCapture* p_video, int p_multiplyer, std::string  p_outputPath)
 {
-	
-}
+	if (p_multiplyer <= 1)
+		return;
 
-void Video::SpeedUp(cv::VideoCapture* p_video, int p_multiplyer,STRING p_outputPath)
-{
+	std::cout << "started rendering..." << "\n";
+
 	cv::Mat frame;
 
 
@@ -38,11 +37,19 @@ void Video::SpeedUp(cv::VideoCapture* p_video, int p_multiplyer,STRING p_outputP
 
 	writer.release();
 
+	std::cout << "finished rendering" << "\n";
+	std::cout << "DONE" << "\n";
 
 }
 
-void Video::SlowDown(cv::VideoCapture* p_video, int p_multiplyer,STRING p_outputPath)
+void Video::SlowDown(cv::VideoCapture* p_video, int p_multiplyer, std::string  p_outputPath)
 {
+
+	if (p_multiplyer <= 1)
+		return;
+
+	std::cout << "started rendering..." << "\n";
+
 	cv::Mat frame;
 
 
@@ -76,10 +83,15 @@ void Video::SlowDown(cv::VideoCapture* p_video, int p_multiplyer,STRING p_output
 
 	writer.release();
 
+	std::cout << "finished rendering" << "\n";
+	std::cout << "DONE" << "\n";
+
 }
 
-void Video::ToColor16(cv::VideoCapture* p_video, STRING p_outputPath)
+void Video::ToColor16(cv::VideoCapture* p_video, std::string  p_outputPath)
 {
+	std::cout << "started rendering..." << "\n";
+
 	cv::Mat frame;
 	cv::Vec3b* rowPtr;
 
@@ -128,11 +140,17 @@ void Video::ToColor16(cv::VideoCapture* p_video, STRING p_outputPath)
 	}
 
 	writer.release();
+
+	std::cout << "finished rendering" << "\n";
+	std::cout << "DONE" << "\n";
 }
 
 
-void Video::Resize(cv::VideoCapture* p_video, int p_newWidth, int p_newHeight, STRING p_outputPath)
+void Video::Resize(cv::VideoCapture* p_video, int p_newWidth, int p_newHeight, std::string p_outputPath)
 {
+	if (p_newWidth <= 0 || p_newHeight <= 0)
+		return;
+
 	cv::Mat frame;
 
 	int fps = p_video->get(cv::CAP_PROP_FPS);
@@ -148,6 +166,7 @@ void Video::Resize(cv::VideoCapture* p_video, int p_newWidth, int p_newHeight, S
 	for (int i = 0; i < framesCount; i++)
 	{
 		(*p_video) >> frame;
+
 		cv::resize(frame, frame, newSize, cv::INTER_LINEAR);
      
 		writer.write(frame);
@@ -159,15 +178,60 @@ void Video::Resize(cv::VideoCapture* p_video, int p_newWidth, int p_newHeight, S
 }
 
 
-void Video::SetVideoCapture(cv::VideoCapture p_video)
+void Video::Split(cv::VideoCapture* p_video, float p_splitPoint, std::string p_outputPath1, std::string p_outputPath2)
 {
-	m_videoCapture = p_video;
+	cv::Mat frame;
+
+	float fps = p_video->get(cv::CAP_PROP_FPS);
+	int framesCount = p_video->get(cv::CAP_PROP_FRAME_COUNT);
+
+	if (p_splitPoint <= 0 || p_splitPoint >= fps * framesCount)
+		return;
+
+	int width = p_video->get(cv::CAP_PROP_FRAME_WIDTH);
+	int height = p_video->get(cv::CAP_PROP_FRAME_HEIGHT);
+
+
+	int splitFrameIndex = static_cast<float>(fps * p_splitPoint);
+
+	//rendering the first clip
+
+
+	std::cout << "started rendering the first part..." << "\n";
+
+	//initializing the video writer
+	
+	cv::VideoWriter writer1(p_outputPath1, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), fps, cv::Size(width, height));
+
+	for (int i = 0; i < splitFrameIndex; i++)
+	{
+		(*p_video) >> frame;
+		writer1.write(frame);
+	}
+
+	writer1.release();
+
+	std::cout << "finished rendering the first part" << "\n";
+
+	//rendering the second clip
+	
+	std::cout << "started rendering the second part..." << "\n";
+
+	//initializing the video writer
+	cv::VideoWriter writer2(p_outputPath2, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), fps, cv::Size(width, height));
+
+	for (int i = splitFrameIndex; i < framesCount; i++)
+	{
+		(*p_video) >> frame;
+		writer2.write(frame);
+	}
+
+	writer2.release();
+
+	std::cout << "finished rendering the second part" << "\n";
+	std::cout << "DONE" << "\n";
 }
 
-cv::VideoCapture Video::GetVideoCapture()
-{
-	return m_videoCapture;
-}
 
 
 
